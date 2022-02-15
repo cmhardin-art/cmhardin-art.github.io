@@ -2,20 +2,20 @@
 <html lang="en">
 
 <head>
-	<title>3D Model</title>
+	<title>3D Model - glb</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 	<link type="text/css" rel="stylesheet" href="style.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r126/three.js" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/three@0.126.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://unpkg.com/three@0.133.0/build/three.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/three@0.133.0/examples/js/loaders/GLTFLoader.js"></script>
 </head>
 
 <body>
 	<script type="module">
-    import { ARButton } from 'https://unpkg.com/three@0.126.0/examples/jsm/webxr/ARButton.js';
+    import { ARButton } from 'https://unpkg.com/three@0.133.0/examples/jsm/webxr/ARButton.js';
     
 		let camera, scene, renderer;
-		let loader; // we need to create a variable for a gltf model loader
+		let loader; // we need to create a variable for a glb model loader
 
 		init();
 		animate();
@@ -39,7 +39,7 @@
 			scene.add(light);
 
       // specify a model URL
-      const modelUrl = 'https://uvl.trk.mybluehost.me/etc/uvl.trk.mybluehost.me/TestGLB';
+      const modelUrl = 'https://another-swmf-hardinarts22.s3.us-west-1.amazonaws.com/3d-images/SpaceTerrariumExport2.glb';
       
 			// create a GLTF loader object. GLTF is a 3D model format usually called the "JPEG of 3D" because it is
       // fast and efficient to use, which is ideal for the web
@@ -59,10 +59,12 @@
 					scene.add(gltf.scene);
           console.log("Model added to scene");
           
+          gltf.scene.scale.multiplyScalar(3);
+                    
           // you can optionally change the position of the model
-          // gltf.scene.position.z = -10; // negative Z moves the model in the opposite direction the camera is facing
-          // gltf.scene.position.y = 5; // positive Y moves the model up
-          // gltf.scene.position.x = 10; // positive X moves hte model to the right
+          gltf.scene.position.z = -0.5; // negative Z moves the model in the opposite direction the camera is facing
+          gltf.scene.position.y = -0.1; // positive Y moves the model up
+          // gltf.scene.position.x = 10; // positive X moves the model to the right
 				},
 				// onProgress callback: optional function for showing progress on model load
 				function (xhr) {
