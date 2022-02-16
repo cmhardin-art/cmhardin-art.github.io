@@ -75,8 +75,7 @@
 	 console.log(child);
 			 )}
       mixer = new THREE.AnimationMixer(model);
-
-      // the gltf animations array contains animation clips for the model
+	    
       console.log(gltf.animations);
 
       gltf.animations.forEach((clip) => {
@@ -117,11 +116,8 @@
 			model.traverse((child) => {
 				if (child instanceof THREE.Mesh) {
 					child.material.map = textureToAdd;
-
-					// Probably need the lines below if you will change the texture after 
-					// the model has been added to the scene
-					// child.material.needsUpdate = true;
-					// child.material.map.needsUpdate = true;
+					child.material.needsUpdate = true;
+					child.material.map.needsUpdate = true;
 				}
 			});
 		}
