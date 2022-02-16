@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-	<title>3D Model</title>
+	<title>3D Model - glb</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 	<link type="text/css" rel="stylesheet" href="style.css">
@@ -15,8 +15,7 @@
     import { ARButton } from 'https://unpkg.com/three@0.133.0/examples/jsm/webxr/ARButton.js';
     
 		let camera, scene, renderer;
-		let loader; // we need to create a variable for a gltf model loader
-		let model;
+		let loader; // we need to create a variable for a glb model loader
 
 		init();
 		animate();
@@ -38,38 +37,43 @@
 			var light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
 			light.position.set(0.5, 1, 0.25);
 			scene.add(light);
-			
-      const modelUrl = 'SpaceTerrariumSmall.glb';
+
+     
+      const modelUrl = '';
       
+			
 			loader = new THREE.GLTFLoader();
+      
       
 			loader.load(
 				modelUrl,
+				
 				function (gltf) {
-				model = gltf.scene;
-				model.position.z = -7
-          			scene.add(model);
+         
+					scene.add(gltf.scene);
           console.log("Model added to scene");
           
-	  //gltf.scene.scale.multiplyScalar(-3);
-	
+          gltf.scene.scale.multiplyScalar(2);
+                    
           
-         // gltf.scene.position.z = -15; // negative Z moves the model in the opposite direction the camera is facing
-          //gltf.scene.position.y = 5; // positive Y moves the model up
-          //gltf.scene.position.x = 10; // positive X moves hte model to the right
+          gltf.scene.position.z = -15; // negative Z moves the model in the opposite direction the camera is facing
+          gltf.scene.position.y = -5; // positive Y moves the model up
+          gltf.scene.position.x = 2; // positive X moves the model to the right
 				},
+				
 				function (xhr) {
-		     	      },
+		      // console.log((xhr.loaded / xhr.total * 100) + '% loaded' );
+	      },
+				// onError callback
 				function (error) {
-				console.error(error);
+					console.error(error);
 				}
 			);
-	
 
 			document.body.appendChild(ARButton.createButton(renderer));
 
 			window.addEventListener('resize', onWindowResize, false);
-		
+		}
 
 		function onWindowResize() {
 			camera.aspect = window.innerWidth / window.innerHeight;
@@ -82,15 +86,9 @@
 			renderer.setAnimationLoop(render);
 		}
 
-		//function render() {
-			rotateModel();
+		function render() {
 			renderer.render(scene, camera);
 		}
-		//function rotateModel() {
-		//if (model !== undefined) {
-			//model.rotation.y = model.rotation.y -0.02 
-		//}
-		//}
 
 	</script>
 </body>
