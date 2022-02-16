@@ -57,33 +57,23 @@
 		}
 
     async function loadModel() {
-      // We recommend storing your models on GitHub and accessing the "Raw" link to the file
-      // The reason is that Glitch uses a virtual folder for assets or uploaded files and it's hard to get a relative path to those models
-      // This model comes from this repo: https://github.com/webxr-academy/models
+  		const textureLoader = new THREE.TextureLoader();
+		const url = "https://raw.githubusercontent.com/cmhardin-art/cmhardin-art.github.io/main/CT_Pallete.png"
+	    	const texture = textureLoader.load(url); 
+		texture.encoding = THREE.sRGBEncoding;
+		texture.flipY = false;
       
-			// load the model texture
-			const textureLoader = new THREE.TextureLoader();
-			const url = "https://raw.githubusercontent.com/cmhardin-art/cmhardin-art.github.io/main/CT_Pallete.png"
-	    		const texture = textureLoader.load(url); 
-			// read more about why we need these settings here
-			// https://threejs.org/docs/#examples/en/loaders/GLTFLoader
-			texture.encoding = THREE.sRGBEncoding;
-			texture.flipY = false;
-      
-      // Add a GLTF model to the scene
       const modelUrl = 'https://raw.githubusercontent.com/cmhardin-art/cmhardin-art.github.io/main/SpaceTerrariumSmallAnim.gltf';
       
-			loader = new THREE.GLTFLoader();
+      loader = new THREE.GLTFLoader();
       const gltf = await loader.loadAsync(modelUrl);
       model = gltf.scene;
       model.position.z = -12; // change the z position a bit
       model.position.y = -6;
-      addTextureToModel(texture); // add a texture to the model
-
-      // setup the model animation
-      // read more about animation here: 
-      // https://threejs.org/docs/#manual/en/introduction/Animation-system
-      // a mixer object controls the actual playback of the animation
+      addTextureToModel(texture); 
+	model.traverse( (child ==> { 
+	 console.log(child);
+			 )}
       mixer = new THREE.AnimationMixer(model);
 
       // the gltf animations array contains animation clips for the model
