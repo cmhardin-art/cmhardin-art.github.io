@@ -75,7 +75,8 @@
 			loader = new THREE.GLTFLoader();
       const gltf = await loader.loadAsync(modelUrl);
       model = gltf.scene;
-      model.position.z = -3; // change the z position a bit
+      model.position.z = -12; // change the z position a bit
+      model.position.y = -6;
       addTextureToModel(texture); // add a texture to the model
 
       // setup the model animation
