@@ -72,6 +72,9 @@
       model.position.y = -6;
       addTextureToModel(texture); 
 	model.traverse( (child ==> { 
+	 if(child instanceof THREE.Mesh) 
+	   child.material.map = texture;
+			 }
 	 console.log(child);
 			 )}
       mixer = new THREE.AnimationMixer(model);
