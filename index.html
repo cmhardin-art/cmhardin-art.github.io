@@ -39,16 +39,19 @@
 			light.position.set(0.5, 1, 0.25);
 			scene.add(light);
 			
-
-
-main().catch((err) => {
-  console.log(err);
+new THREE.GLTFLoader().load('https://raw.githubusercontent.com/cmhardin-art/cmhardin-art.github.io/main/Challenger.gltf', result => { 
+    doSomething();
+  //load another model
+  new THREE.GLTFLoader().load('https://raw.githubusercontent.com/cmhardin-art/cmhardin-art.github.io/main/Alien.gltf', result => {
+      doSomething();
+      // continue processing
+      startRenderLoop();
+      });
 });
-  async function main() {
-  const [model, modelB] = await Promise.all([
-      loader.loadAsync('https://raw.githubusercontent.com/cmhardin-art/cmhardin-art.github.io/main/Challenger.gltf'),
-      loader.loadAsync('https://raw.githubusercontent.com/cmhardin-art/cmhardin-art.github.io/main/Alien.gltf'),
-  ]);
+function loadModel(url) {
+  return new Promise(resolve => {
+    new THREE.GLTFLoader().load(url, resolve);
+  });
 }
       //const modelUrl = 'https://raw.githubusercontent.com/cmhardin-art/cmhardin-art.github.io/main/Challenger.gltf';
       //const modelUrl2 = 'https://raw.githubusercontent.com/cmhardin-art/cmhardin-art.github.io/main/Alien.gltf';
