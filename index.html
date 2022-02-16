@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-	<title>Space Station Alpha</title>
+	<title>3D Model</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 	<link type="text/css" rel="stylesheet" href="style.css">
@@ -12,83 +12,65 @@
 
 <body>
 	<script type="module">
-    // This is an example of how to perform an animation off of a GLTF model.
-    // Many models come with animations "baked" in. The animation is often easier to do in a program like Blender or Maya and 
-    // export the animation as part of the .gltf file. 
+    import { ARButton } from 'https://unpkg.com/three@0.133.0/examples/jsm/webxr/ARButton.js';
     
-	  import { ARButton } from "https://unpkg.com/three@0.133.0/examples/jsm/webxr/ARButton.js";
-
-		let container;
 		let camera, scene, renderer;
-		let controller;
-		let loader;
+		let loader; // we need to create a variable for a gltf model loader
 		let model;
-		let mixer;
-		const clock = new THREE.Clock();
 
 		init();
 		animate();
 
 		function init() {
-			container = document.createElement('div');
+			const container = document.createElement('div');
 			document.body.appendChild(container);
 
 			scene = new THREE.Scene();
 
-			camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 20);
+			camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 40);
 
 			renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 			renderer.setPixelRatio(window.devicePixelRatio);
 			renderer.setSize(window.innerWidth, window.innerHeight);
-			// renderer.outputEncoding = THREE.sRGBEncoding;
 			renderer.xr.enabled = true; // we have to enable the renderer for webxr
 			container.appendChild(renderer.domElement);
 
-			// Add a light to the cene
-			var light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 100);
+			var light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
 			light.position.set(0.5, 1, 0.25);
 			scene.add(light);
+			
+      const modelUrl = 'SpaceTerrariumSmall.glb';
       
-      loadModel();
+			loader = new THREE.GLTFLoader();
+      
+			loader.load(
+				modelUrl,
+				function (gltf) {
+				model = gltf.scene;
+				model.position.z = -7
+          			scene.add(model);
+          console.log("Model added to scene");
+          
+	  gltf.scene.scale.multiplyScalar(-3);
+	
+          
+         gltf.scene.position.z = -15; // negative Z moves the model in the opposite direction the camera is facing
+         gltf.scene.position.y = 5; // positive Y moves the model up
+         gltf.scene.position.x = 10; // positive X moves hte model to the right
+				},
+				function (xhr) {
+		     	      },
+				function (error) {
+				console.error(error);
+				}
+			);
+	
 
 			document.body.appendChild(ARButton.createButton(renderer));
 
 			window.addEventListener('resize', onWindowResize, false);
-		}
+		
 
-    async function loadModel() {
-  		const textureLoader = new THREE.TextureLoader();
-		const url = "https://raw.githubusercontent.com/cmhardin-art/cmhardin-art.github.io/main/CT_Pallete.png"
-	    	const texture = textureLoader.load(url); 
-		texture.encoding = THREE.sRGBEncoding;
-		texture.flipY = false;
-      
-      const modelUrl = 'https://raw.githubusercontent.com/cmhardin-art/cmhardin-art.github.io/main/SpaceTerrariumSmallAnim.gltf';
-      
-      loader = new THREE.GLTFLoader();
-      const gltf = await loader.loadAsync(modelUrl);
-      model = gltf.scene;
-      model.position.z = -12; // change the z position a bit
-      model.position.y = -6;
-      addTextureToModel(texture); 
-	model.traverse( (child = { 
-	 if(child instanceof THREE.Mesh) 
-	   child.material.map = texture;
-			 }
-	 )}
-      mixer = new THREE.AnimationMixer(model);
-	    
-      console.log(gltf.animations);
-
-      gltf.animations.forEach((clip) => {
-        const action = mixer.clipAction(clip);
-        action.play(); // start playing each animation clip
-      });
-
-      scene.add(model);
-    }
-
-    
 		function onWindowResize() {
 			camera.aspect = window.innerWidth / window.innerHeight;
 			camera.updateProjectionMatrix();
@@ -96,33 +78,19 @@
 			renderer.setSize(window.innerWidth, window.innerHeight);
 		}
 
-		// this function is only called one time
 		function animate() {
-			// here we set the render function to be called in a loop
 			renderer.setAnimationLoop(render);
 		}
 
-		// render function called on a loop every time the screen is refreshed
-		// which typically means 60 times a second (60 frames per second)
-		function render() {
-			const delta = clock.getDelta();
-			if (mixer) {
-				// Update the animation mixer on each frame
-				mixer.update(delta);
-			}
-
+		//function render() {
+			rotateModel();
 			renderer.render(scene, camera);
 		}
-
-		function addTextureToModel(textureToAdd) {
-			model.traverse((child) => {
-				if (child instanceof THREE.Mesh) {
-					child.material.map = textureToAdd;
-					child.material.needsUpdate = true;
-					child.material.map.needsUpdate = true;
-				}
-			});
-		}
+		//function rotateModel() {
+		//if (model !== undefined) {
+			//model.rotation.y = model.rotation.y -0.02 
+		//}
+		//}
 
 	</script>
 </body>
