@@ -71,7 +71,7 @@
       model.position.z = -12; // change the z position a bit
       model.position.y = -6;
       addTextureToModel(texture); 
-	model.traverse( (child => { 
+	model.traverse( (child = { 
 	 if(child instanceof THREE.Mesh) 
 	   child.material.map = texture;
 			 }
