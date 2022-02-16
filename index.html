@@ -39,7 +39,7 @@
 			scene.add(light);
 
       // specify a model URL
-      const modelUrl = 'https://raw.githubusercontent.com/cmhardin-art/cmhardin-art.github.io/main/Challenger2.gltf';
+      const modelUrl = 'https://raw.githubusercontent.com/cmhardin-art/cmhardin-art.github.io/main/Challenger.gltf';
       
 			// create a GLTF loader object. GLTF is a 3D model format usually called the "JPEG of 3D" because it is
       // fast and efficient to use, which is ideal for the web
@@ -59,6 +59,8 @@
 					scene.add(gltf.scene);
           console.log("Model added to scene");
           
+	  gtlf.scene.scale.multiplyScalar(-5)
+				
           // you can optionally change the position of the model
           gltf.scene.position.z = -20; // negative Z moves the model in the opposite direction the camera is facing
           gltf.scene.position.y = 5; // positive Y moves the model up
