@@ -45,9 +45,11 @@
 			container.appendChild(renderer.domElement);
 
 			// Add a light to the cene
-			
-			const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
-			scene.add( directionalLight );
+			var light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
+			light.position.set(0.5, 1, 0.25);
+			scene.add(light);
+      
+      loadModel();
 
 			document.body.appendChild(ARButton.createButton(renderer));
 
@@ -61,7 +63,7 @@
       
 			// load the model texture
 			const textureLoader = new THREE.TextureLoader();
-			const texture = textureLoader.load("MoonSurface.png");
+			const texture = textureLoader.load("CT_Pallete.png");
 			// read more about why we need these settings here
 			// https://threejs.org/docs/#examples/en/loaders/GLTFLoader
 			texture.encoding = THREE.sRGBEncoding;
@@ -73,8 +75,7 @@
 			loader = new THREE.GLTFLoader();
       const gltf = await loader.loadAsync(modelUrl);
       model = gltf.scene;
-      model.position.z = -15; // change the z position a bit
-      model.position.y = -6;
+      model.position.z = -3; // change the z position a bit
       addTextureToModel(texture); // add a texture to the model
 
       // setup the model animation
