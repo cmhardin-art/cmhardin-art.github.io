@@ -16,6 +16,7 @@
     
 		let camera, scene, renderer;
 		let loader; // we need to create a variable for a gltf model loader
+		let model;
 
 		init();
 		animate();
@@ -38,40 +39,29 @@
 			light.position.set(0.5, 1, 0.25);
 			scene.add(light);
 
-      // specify a model URL
+  
       const modelUrl = 'https://raw.githubusercontent.com/cmhardin-art/cmhardin-art.github.io/main/Challenger.gltf';
       
-			// create a GLTF loader object. GLTF is a 3D model format usually called the "JPEG of 3D" because it is
-      // fast and efficient to use, which is ideal for the web
 			loader = new THREE.GLTFLoader();
       
-      // learn about other types of 3D model formats you can use here: 
-      // https://threejs.org/docs/#manual/en/introduction/Loading-3D-models
-      
-      // load the model
-      // loader takes in a few arguments loader(model url, onLoad callback, onProgress callback, onError callback)
 			loader.load(
-				// model URL
 				modelUrl,
-				// onLoad callback: what get's called once the full model has loaded
 				function (gltf) {
-          // gltf.scene contains the Three.js object group that represents the 3d object of the model
-					scene.add(gltf.scene);
+				model = gltf.scene;
+				model.position.z = -10
+          			scene.add(model);
           console.log("Model added to scene");
           
-	 gltf.scene.scale.multiplyScalar(-3);
-          // you can optionally change the position of the model
+	  gltf.scene.scale.multiplyScalar(-3);
+          
           gltf.scene.position.z = -15; // negative Z moves the model in the opposite direction the camera is facing
           gltf.scene.position.y = 5; // positive Y moves the model up
           gltf.scene.position.x = 10; // positive X moves hte model to the right
 				},
-				// onProgress callback: optional function for showing progress on model load
 				function (xhr) {
-		      // console.log((xhr.loaded / xhr.total * 100) + '% loaded' );
-	      },
-				// onError callback
+		     	      },
 				function (error) {
-					console.error(error);
+				console.error(error);
 				}
 			);
 
@@ -92,8 +82,10 @@
 		}
 
 		function render() {
+			rotateModel();
 			renderer.render(scene, camera);
 		}
+		function rotateModel() {
 
 	</script>
 </body>
