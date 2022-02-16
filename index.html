@@ -39,22 +39,8 @@
 			light.position.set(0.5, 1, 0.25);
 			scene.add(light);
 			
-new THREE.GLTFLoader().load('https://raw.githubusercontent.com/cmhardin-art/cmhardin-art.github.io/main/Challenger.gltf', result => { 
-    doSomething();
-  //load another model
-  new THREE.GLTFLoader().load('https://raw.githubusercontent.com/cmhardin-art/cmhardin-art.github.io/main/Alien.gltf', result => {
-      doSomething();
-      // continue processing
-      startRenderLoop();
-      });
-});
-function loadModel(url) {
-  return new Promise(resolve => {
-    new THREE.GLTFLoader().load(url, resolve);
-  });
-}
-      //const modelUrl = 'https://raw.githubusercontent.com/cmhardin-art/cmhardin-art.github.io/main/Challenger.gltf';
-      //const modelUrl2 = 'https://raw.githubusercontent.com/cmhardin-art/cmhardin-art.github.io/main/Alien.gltf';
+      const modelUrl = 'https://raw.githubusercontent.com/cmhardin-art/cmhardin-art.github.io/main/Challenger.gltf';
+      const modelUrl2 = 'https://raw.githubusercontent.com/cmhardin-art/cmhardin-art.github.io/main/Alien.gltf';
       
 			loader = new THREE.GLTFLoader();
       
@@ -67,6 +53,15 @@ function loadModel(url) {
           console.log("Model added to scene");
           
 	  gltf.scene.scale.multiplyScalar(-3);
+			loader.load(
+				modelUrl2,
+				function (gltf) {
+				model = gltf.scene;
+				model.position.z = -4
+          			scene.add(model);
+          console.log("Model added to scene");
+          
+	  gltf.scene.scale.multiplyScalar(-1);
           
          // gltf.scene.position.z = -15; // negative Z moves the model in the opposite direction the camera is facing
           //gltf.scene.position.y = 5; // positive Y moves the model up
