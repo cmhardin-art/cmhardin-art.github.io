@@ -39,7 +39,7 @@
 			light.position.set(0.5, 1, 0.25);
 			scene.add(light);
 			
-      const modelUrl = 'https://raw.githubusercontent.com/cmhardin-art/cmhardin-art.github.io/main/Challenger.gltf';
+      const modelUrl = 'SpaceTerrariumSmall.glb';
       
 			loader = new THREE.GLTFLoader();
       
@@ -51,7 +51,7 @@
           			scene.add(model);
           console.log("Model added to scene");
           
-	  gltf.scene.scale.multiplyScalar(-3);
+	  //gltf.scene.scale.multiplyScalar(-3);
 	
           
          // gltf.scene.position.z = -15; // negative Z moves the model in the opposite direction the camera is facing
@@ -82,13 +82,13 @@
 			renderer.setAnimationLoop(render);
 		}
 
-		function render() {
+		//function render() {
 			rotateModel();
 			renderer.render(scene, camera);
 		}
-		function rotateModel() {
-		if (model !== undefined) {
-			model.rotation.y = model.rotation.y -0.02 
+		//function rotateModel() {
+		//if (model !== undefined) {
+			//model.rotation.y = model.rotation.y -0.02 
 		}
 		}
 
