@@ -1,143 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Hardin SWMF 2022</title>
+        <style>
+            body {
+                overflow: hidden;
+                margin: 0px;
+            }
+        </style>
+    </head>
 
-<head>
-	<title>Advanced 3D model animation</title>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-	<link type="text/css" rel="stylesheet" href="style.css">
-  <script src="https://unpkg.com/three@0.133.0/build/three.js" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/three@0.133.0/examples/js/loaders/GLTFLoader.js"></script>
-</head>
-
-<body>
-	<script type="module">
-    
-	  import { ARButton } from "https://unpkg.com/three@0.133.0/examples/jsm/webxr/ARButton.js";
-
-		let container;
-		let camera, scene, renderer;
-		let controller;
-		let loader;
-		let model;
-		let mixer;
-		const clock = new THREE.Clock();
-
-
-const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
-renderer.xr.enabled = true;
-const scene = new THREE.Scene()
-let animation = false
-
-
-
-const camera = new THREE.PerspectiveCamera(
-    75,
-    window.innerWidth / window.innerHeight,
-    0.1,
-    1000
-)
-camera.position.set(2.0, 5.0, 5.0)
-
-renderer.setSize(window.innerWidth, window.innerHeight)
-document.body.appendChild(renderer.domElement)
-document.body.appendChild( ARButton.createButton( renderer ) );
-
-const controls = new OrbitControls(camera, renderer.domElement)
-controls.enableDamping = true
-controls.target.set(0, 2, 0)
-
-const pmremGenerator = new THREE.PMREMGenerator(renderer);
-pmremGenerator.compileEquirectangularShader();
-const rgbeLoader = new RGBELoader();
-rgbeLoader.load('The_Milky_Way_galaxy_center_(composite_image).hdr', function(texture) {
-    const envMap = pmremGenerator.fromEquirectangular(texture).texture;
-    //scene.background = envMap;
-    scene.environment = envMap;
-});
-
-let mixer: THREE.AnimationMixer
-const gltfLoader = new GLTFLoader()
-
-gltfLoader.load(
-    'spacestationalpha.glb',
-    (gltf) => {
-        mixer = new THREE.AnimationMixer(gltf.scene)
-        gltf.animations.forEach(clip => mixer.clipAction(clip).play())
-        gltf.scene.position.z = -6; 
-        gltf.scene.position.y = -6
-        scene.add(gltf.scene)
-    },
-)
-
-
-window.addEventListener('resize', onWindowResize, false)
-function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight
-    camera.updateProjectionMatrix()
-    renderer.setSize(window.innerWidth, window.innerHeight)
-    render()
-}
-
-let stage = 1;
-
-const clock = new THREE.Clock()
-clock.autoStart = false
-
-let playbtn = document.getElementById('playbtn')
-    playbtn!.addEventListener("click", () => {
-        if (stage == 4) {
-            stage = 1
-            mixer.setTime(0)
-            playbtn!.textContent="Raise Platform";
-        } else {
-            animation = true
-            clock.start()
-        }
-    });
-
-    let controller = renderer.xr.getController(0);
-    controller.addEventListener('select', () => {
-        if (stage == 4) {
-            stage = 1
-            mixer.setTime(0)
-        } else {
-            animation = true
-            clock.start()
-        }
-    });
-
-function animate() {
-
-    requestAnimationFrame(animate)
-
-    controls.update()
-
-    mixer.update(clock.getDelta())
-    if (mixer.time>6.25 && stage == 1) {
-    clock.stop()
-    animation = false
-    stage = stage+1
-    playbtn!.textContent="Grow Flowers";
-    };
-    if (mixer.time>12.49 && stage == 2) {
-    clock.stop()
-    animation = false
-    stage = stage + 1
-    playbtn!.textContent="Fly Ship";
-    };
-    if (mixer.time>18.74 && stage == 3) {
-        clock.stop()
-        animation = false
-        stage = stage + 1
-        playbtn!.textContent="Reset";
-        };
-    render()
-}
-
-function render() {
-    renderer.render(scene, camera)
-}
-  </script>
-  </body>
+    <body id="main">
+        <script type="module" src="bundle.js" style="z-index: -1; position: absolute; top:0px; right:0px; bottom:0px; left:0px;"></script>
+        <div style="z-index: 1; position: absolute; width: 100%; text-align: center; margin-top: 5%;">
+        <button id="playbtn" style="border-radius: 8px; font-size: 32px; border: 2px solid white; background-color: black; color: white; opacity: 0.5;" >Play</button>
+        </div>
+    </body>
 </html>
