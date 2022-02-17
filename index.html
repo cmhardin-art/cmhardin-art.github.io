@@ -1,24 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>Image target with glb (only Android)</title>
-    <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, user-scalable=no"
-    />
-    <link type="text/css" rel="stylesheet" href="style.css" />
-    <script
-      src="https://unpkg.com/three@0.133.0/build/three.js"
-      crossorigin="anonymous"
-    ></script>
-    <script src="https://unpkg.com/three@0.133.0/examples/js/loaders/GLTFLoader.js"></script>
-    <script src="//cdn.jsdelivr.net/npm/eruda"></script>
-  </head>
 
-  <body>
-    <div id="console-ui"></div>
-    <script type="module">const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+<head>
+	<title>Advanced 3D model animation</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+	<link type="text/css" rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/three@0.133.0/build/three.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/three@0.133.0/examples/js/loaders/GLTFLoader.js"></script>
+</head>
+
+<body>
+	<script type="module">
+    
+	  import { ARButton } from "https://unpkg.com/three@0.133.0/examples/jsm/webxr/ARButton.js";
+
+		let container;
+		let camera, scene, renderer;
+		let controller;
+		let loader;
+		let model;
+		let mixer;
+		const clock = new THREE.Clock();
+
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
 renderer.xr.enabled = true;
 const scene = new THREE.Scene()
 let animation = false
