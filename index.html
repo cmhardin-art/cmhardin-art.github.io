@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-	<title>3D model animation</title>
+	<title>3D Model - glb</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 	<link type="text/css" rel="stylesheet" href="style.css">
@@ -12,11 +12,10 @@
 
 <body>
 	<script type="module">
-    import { ARButton } from "https://unpkg.com/three@0.133.0/examples/jsm/webxr/ARButton.js";
+    import { ARButton } from 'https://unpkg.com/three@0.133.0/examples/jsm/webxr/ARButton.js';
     
 		let camera, scene, renderer;
-		let loader;
-    let model;
+		let loader; // we need to create a variable for a glb model loader
 
 		init();
 		animate();
@@ -39,21 +38,39 @@
 			light.position.set(0.5, 1, 0.25);
 			scene.add(light);
 
-      // Add a GLTF model to the scene
-      const modelUrl = 'https://github.com/cmhardin-art/cmhardin-art.github.io/raw/main/SpaceTerrariumExport2.glb';
+      // specify a model URL
+      const modelUrl = 'https://github.com/cmhardin-art/cmhardin-art.github.io/raw/main/spacestationalpha.glb';
       
+			// create a GLTF loader object. GLTF is a 3D model format usually called the "JPEG of 3D" because it is
+      // fast and efficient to use, which is ideal for the web
 			loader = new THREE.GLTFLoader();
+      
+      // learn about other types of 3D model formats you can use here: 
+      // https://threejs.org/docs/#manual/en/introduction/Loading-3D-models
+      
+      // load the model
+      // loader takes in a few arguments loader(model url, onLoad callback, onProgress callback, onError callback)
 			loader.load(
+				// model URL
 				modelUrl,
+				// onLoad callback: what get's called once the full model has loaded
 				function (gltf) {
-          model = gltf.scene;
-          model.position.z = -20;
-					scene.add(model);
+          // gltf.scene contains the Three.js object group that represents the 3d object of the model
+					scene.add(gltf.scene);
           console.log("Model added to scene");
+          
+          //gltf.scene.scale.multiplyScalar(3);
+                    
+          // you can optionally change the position of the model
+          gltf.scene.position.z = -0.5; // negative Z moves the model in the opposite direction the camera is facing
+          gltf.scene.position.y = -0.1; // positive Y moves the model up
+          // gltf.scene.position.x = 10; // positive X moves the model to the right
 				},
+				// onProgress callback: optional function for showing progress on model load
 				function (xhr) {
 		      // console.log((xhr.loaded / xhr.total * 100) + '% loaded' );
 	      },
+				// onError callback
 				function (error) {
 					console.error(error);
 				}
@@ -76,23 +93,8 @@
 		}
 
 		function render() {
-      rotateModel();
 			renderer.render(scene, camera);
 		}
-    
-    let degrees = 0; // the angle to rotate our model
-    
-    //function rotateModel() {
-     // if (model !== undefined) {
-        // valid degrees range from 0-360
-        // Once over 360 three.js will treat 360 as 0, 361 as 1, 362 as 2 and so on
-      //  degrees = degrees + 0.2; 
-       // model.rotation.y = THREE.Math.degToRad(degrees); // we convert degrees to a radian value
-        
-        // more math utility functions can be found here:
-        // https://threejs.org/docs/#api/en/math/MathUtils
-      }
-    }
 
 	</script>
 </body>
