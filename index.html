@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Video</title>
+    <title>Video transparent - ios</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
     <link type="text/css" rel="stylesheet" href="style.css" />
@@ -10,10 +10,11 @@
   </head>
 
 <body>  
+  <div id="console-ui"></div>
 	<script type="module">
 		import { ARButton } from 'https://unpkg.com/three@0.133.0/examples/jsm/webxr/ARButton.js';
 
-    const VIDEO_WIDTH = 1280; // original video width
+    const VIDEO_WIDTH = 1920; // original video width
     const VIDEO_HEIGHT = 720; // original video height
     
 		let container;
@@ -23,7 +24,7 @@
 
 		init();
 		animate();
-
+    
 		function init() {
 			container = document.createElement('div');
 			document.body.appendChild(container);
@@ -47,7 +48,12 @@
       videoMesh.position.set(0,0, -1);
       scene.add(videoMesh);
 
-      const button = ARButton.createButton(renderer)
+      const button = ARButton.createButton(renderer, {
+        optionalFeatures: ["dom-overlay", "dom-overlay-for-handheld-ar"],
+        domOverlay: {
+          root: document.body
+        }
+      });
 			document.body.appendChild(button);
       
       // play a video when a user clicks on the start AR button
@@ -75,6 +81,7 @@
 		function render() {
       if (video) {
         if (video.readyState === video.HAVE_ENOUGH_DATA) {
+          videoCanvasContext.clearRect(0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
           videoCanvasContext.drawImage(video, 0, 0);
           if (videoTexture) 
             videoTexture.needsUpdate = true;
@@ -86,6 +93,8 @@
     
     function createCanvasWithVideo() {
       video = document.createElement('video');
+      // IMPORTANT: This video has to be a video with transparency!
+      // Read this for how to create an iOS video with transparency: https://blog.gskinner.com/archives/2021/10/alpha-video-in-html5.html
       video.src = "../globething.webm";
       video.crossOrigin = "anonymous"; //important!
       video.load(); // call after changing source
@@ -130,7 +139,6 @@
     }
     
     function playVideo() {
-      console.log("play video");
       video.play();
     }
 	</script>
