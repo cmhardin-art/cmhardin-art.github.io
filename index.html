@@ -42,6 +42,8 @@
 			light.position.set(0.5, 1, 0.25);
 			scene.add(light);
       
+   document.getElementById('button-container').addEventListener(
+  'beforexrselect', ev => ev.preventDefault());
       // Setup the video canvas and video mesh
       createCanvasWithVideo(); // step 1: setup a canvas with the video
       const videoMesh = createMeshWithVideo(); // step 2: setup a mesh with the video
