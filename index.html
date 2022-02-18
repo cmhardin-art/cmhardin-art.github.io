@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Video transparent - ios</title>
+    <title>Video transparent - android and desktop</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
     <link type="text/css" rel="stylesheet" href="style.css" />
@@ -14,8 +14,8 @@
 	<script type="module">
 		import { ARButton } from 'https://unpkg.com/three@0.133.0/examples/jsm/webxr/ARButton.js';
 
-    const VIDEO_WIDTH = 1920; // original video width
-    const VIDEO_HEIGHT = 720; // original video height
+    const VIDEO_WIDTH = 640; // original video width
+    const VIDEO_HEIGHT = 360; // original video height
     
 		let container;
 		let camera, scene, renderer;
@@ -24,7 +24,7 @@
 
 		init();
 		animate();
-    
+
 		function init() {
 			container = document.createElement('div');
 			document.body.appendChild(container);
@@ -49,7 +49,7 @@
       scene.add(videoMesh);
 
       const button = ARButton.createButton(renderer, {
-        optionalFeatures: ["dom-overlay", "dom-overlay-for-handheld-ar"],
+       // optionalFeatures: ["dom-overlay", "dom-overlay-for-handheld-ar"],
         domOverlay: {
           root: document.body
         }
@@ -93,16 +93,13 @@
     
     function createCanvasWithVideo() {
       video = document.createElement('video');
-      // IMPORTANT: This video has to be a video with transparency!
-      // Read this for how to create an iOS video with transparency: https://blog.gskinner.com/archives/2021/10/alpha-video-in-html5.html
+      // IMPORTANT: This video has to be a video with transparency! Recommended format is webm
       video.src = "../globething.webm";
       video.crossOrigin = "anonymous"; //important!
       video.load(); // call after changing source
       video.preload = 'auto';
       video.autoload = true;
       video.loop = true; // for autolooping
-      video.setAttribute('playsinline', false); // need this for ios
-      video.setAttribute('webkit-playsinline', false); // need this for ios
       
       videoCanvas = document.createElement('canvas');
       videoCanvas.width = VIDEO_WIDTH;
