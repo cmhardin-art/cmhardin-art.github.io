@@ -2,36 +2,35 @@
 <html lang="en">
 
 <head>
-	<title>AnimTEST8</title>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-	<link type="text/css" rel="stylesheet" href="style.css">
-  <script src="https://unpkg.com/three@0.133.0/build/three.js" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/three@0.133.0/examples/js/loaders/GLTFLoader.js"></script>
-</head>
+    <title>Video transparent - android and desktop</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+    <link type="text/css" rel="stylesheet" href="style.css" />
+    <script src="https://unpkg.com/three@0.133.0/build/three.js" crossorigin="anonymous"></script>
+  </head>
 
-<body>
+<body>  
+  <div id="console-ui"></div>
 	<script type="module">
-    import { ARButton } from 'https://unpkg.com/three@0.133.0/examples/jsm/webxr/ARButton.js';
+		import { ARButton } from 'https://unpkg.com/three@0.133.0/examples/jsm/webxr/ARButton.js';
+
+    const VIDEO_WIDTH = 640; // original video width
+    const VIDEO_HEIGHT = 360; // original video height
     
-		let camera, scene, renderer;
-		let loader; // we need to create a variable for a glb model loader
 		let container;
+		let camera, scene, renderer;
 		let controller;
-		let model;
-		let mixer;
-		const clock = new THREE.Clock();
+    let video, videoCanvasContext, videoCanvas, videoTexture;
 
 		init();
 		animate();
 
 		function init() {
-			const container = document.createElement('div');
+			container = document.createElement('div');
 			document.body.appendChild(container);
 
 			scene = new THREE.Scene();
-
-			camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 40);
+			camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 200);
 
 			renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 			renderer.setPixelRatio(window.devicePixelRatio);
@@ -42,53 +41,28 @@
 			var light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
 			light.position.set(0.5, 1, 0.25);
 			scene.add(light);
-
-      // specify a model URL
-      const modelUrl = '../Robot5.gltf';
       
-			// create a GLTF loader object. GLTF is a 3D model format usually called the "JPEG of 3D" because it is
-      // fast and efficient to use, which is ideal for the web
-			loader = new THREE.GLTFLoader();
-      
-      // learn about other types of 3D model formats you can use here: 
-      // https://threejs.org/docs/#manual/en/introduction/Loading-3D-models
-      
-      // load the model
-      // loader takes in a few arguments loader(model url, onLoad callback, onProgress callback, onError callback)
-			loader.load(
-				// model URL
-				modelUrl,
-				// onLoad callback: what get's called once the full model has loaded
-				function (gltf) {
-          // gltf.scene contains the Three.js object group that represents the 3d object of the model
-					scene.add(gltf.scene);
-          console.log("Model added to scene");
-          
-          //gltf.scene.scale.multiplyScalar(3);
-                    
-          // you can optionally change the position of the model
-          gltf.scene.position.z = -10; // negative Z moves the model in the opposite direction the camera is facing
-          gltf.scene.position.y = -6; // positive Y moves the model up
-          // gltf.scene.position.x = 10; // positive X moves the model to the right
-				},
-				// onProgress callback: optional function for showing progress on model load
-				function (xhr) {
-		      // console.log((xhr.loaded / xhr.total * 100) + '% loaded' );
-	      },
-				// onError callback
-				function (error) {
-					console.error(error);
-				}
-			);
- mixer = new THREE.AnimationMixer(model);
+      // Setup the video canvas and video mesh
+      createCanvasWithVideo(); // step 1: setup a canvas with the video
+      const videoMesh = createMeshWithVideo(); // step 2: setup a mesh with the video
+      videoMesh.position.set(0,0, -1);
+      scene.add(videoMesh);
 
-      // the gltf animations array contains animation clips for the model
-      console.log(gltf.animations);
-
-     clips.forEach( function ( clip ) {
-	mixer.clipAction( clip ).play();
-} );
-			document.body.appendChild(ARButton.createButton(renderer));
+      const button = ARButton.createButton(renderer, {
+        optionalFeatures: ["dom-overlay", "dom-overlay-for-handheld-ar"],
+        domOverlay: {
+          root: document.body
+        }
+      });
+			document.body.appendChild(button);
+      
+      // play a video when a user clicks on the start AR button
+      button.addEventListener('click', () => {
+        playVideo();
+        
+        // optionally wait three seconds before playing the video
+        // setTimeout(playVideo, 2000);
+      })
 
 			window.addEventListener('resize', onWindowResize, false);
 		}
@@ -105,9 +79,65 @@
 		}
 
 		function render() {
+      if (video) {
+        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+          videoCanvasContext.clearRect(0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
+          videoCanvasContext.drawImage(video, 0, 0);
+          if (videoTexture) 
+            videoTexture.needsUpdate = true;
+        }
+      }
+
 			renderer.render(scene, camera);
 		}
+    
+    function createCanvasWithVideo() {
+      video = document.createElement('video');
+      // IMPORTANT: This video has to be a video with transparency! Recommended format is webm
+      video.src = "https://webmshare.com/Y7aZ0";
+      video.crossOrigin = "anonymous"; //important!
+      video.load(); // call after changing source
+      video.preload = 'auto';
+      video.autoload = true;
+      video.loop = true; // for autolooping
+      
+      videoCanvas = document.createElement('canvas');
+      videoCanvas.width = VIDEO_WIDTH;
+      videoCanvas.height = VIDEO_HEIGHT;
 
+      // The canvas element is the actual DOM node that's embedded in the HTML page. 
+      // The canvas context is an object with properties and methods that you can use 
+      // to render graphics inside the canvas element. 
+      videoCanvasContext = videoCanvas.getContext('2d');
+      videoCanvasContext.fillStyle = 'rgba(255,255,255,0)'; // transparent background color
+      videoCanvasContext.fillRect(0, 0, videoCanvas.width, videoCanvas.height);
+    }
+    
+    function createMeshWithVideo() {
+      // first we create a geometry in the shape of a plane to hold the video
+      // tthe unites here have to corespond to ratio/size of video but scaled down to 
+      // webxr units. So in this case the original video was aspect ratio 16 : 9 
+      // but those units would be too large for webxr, so we divide by 10
+      const geometry = new THREE.PlaneGeometry(1.6, 0.9); 
+      
+      // then we setup a material associated with the video through a texture
+      videoTexture = new THREE.Texture(videoCanvas);
+      videoTexture.minFilter = THREE.LinearFilter;
+      videoTexture.magFilter = THREE.LinearFilter;
+      const material = new THREE.MeshLambertMaterial({ 
+        map: videoTexture, 
+        side:THREE.DoubleSide,
+        transparent: true,
+      });
+      
+      // finally you associate the geometry and material into one mesh
+      const mesh = new THREE.Mesh(geometry, material);
+      return mesh;
+    }
+    
+    function playVideo() {
+      video.play();
+    }
 	</script>
 </body>
 
