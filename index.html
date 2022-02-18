@@ -87,9 +87,9 @@
       // the gltf animations array contains animation clips for the model
       console.log(gltf.animations);
 
-      gltf.animations.forEach((clip) => {
-        const action = mixer.clipAction(clip);
-        action.play(); // start playing each animation clip
+     clips.forEach( function ( clip ) {
+	mixer.clipAction( clip ).play();
+} );
 			document.body.appendChild(ARButton.createButton(renderer));
 
 			window.addEventListener('resize', onWindowResize, false);
