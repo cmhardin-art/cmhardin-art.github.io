@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-	<title>SPACE TEST2</title>
+	<title>Advanced 3D model animation</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 	<link type="text/css" rel="stylesheet" href="style.css">
@@ -12,75 +12,77 @@
 
 <body>
 	<script type="module">
-    import { ARButton } from 'https://unpkg.com/three@0.133.0/examples/jsm/webxr/ARButton.js';
+    // This is an example of how to perform an animation off of a GLTF model.
+    // Many models come with animations "baked" in. The animation is often easier to do in a program like Blender or Maya and 
+    // export the animation as part of the .gltf file. 
     
+	  import { ARButton } from "https://unpkg.com/three@0.133.0/examples/jsm/webxr/ARButton.js";
+
+		let container;
 		let camera, scene, renderer;
-		let loader; // we need to create a variable for a glb model loader
+		let controller;
+		let loader;
+		let model;
+		let mixer;
+		const clock = new THREE.Clock();
 
 		init();
 		animate();
 
 		function init() {
-			const container = document.createElement('div');
+			container = document.createElement('div');
 			document.body.appendChild(container);
 
 			scene = new THREE.Scene();
 
-			camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 40);
+			camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 20);
 
 			renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 			renderer.setPixelRatio(window.devicePixelRatio);
 			renderer.setSize(window.innerWidth, window.innerHeight);
+			// renderer.outputEncoding = THREE.sRGBEncoding;
 			renderer.xr.enabled = true; // we have to enable the renderer for webxr
 			container.appendChild(renderer.domElement);
 
+			// Add a light to the cene
 			var light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
 			light.position.set(0.5, 1, 0.25);
 			scene.add(light);
-
-      // specify a model URL
-      const modelUrl = 'https://github.com/cmhardin-art/cmhardin-art.github.io/raw/main/Robot.glb';
       
-			// create a GLTF loader object. GLTF is a 3D model format usually called the "JPEG of 3D" because it is
-      // fast and efficient to use, which is ideal for the web
-			loader = new THREE.GLTFLoader();
-      
-      // learn about other types of 3D model formats you can use here: 
-      // https://threejs.org/docs/#manual/en/introduction/Loading-3D-models
-      
-      // load the model
-      // loader takes in a few arguments loader(model url, onLoad callback, onProgress callback, onError callback)
-			loader.load(
-				// model URL
-				modelUrl,
-				// onLoad callback: what get's called once the full model has loaded
-				function (gltf) {
-          // gltf.scene contains the Three.js object group that represents the 3d object of the model
-					scene.add(gltf.scene);
-          console.log("Model added to scene");
-          
-          //gltf.scene.scale.multiplyScalar(-3);
-                    
-          // you can optionally change the position of the model
-          gltf.scene.position.z = -12; // negative Z moves the model in the opposite direction the camera is facing
-          gltf.scene.position.y = -6; // positive Y moves the model up
-          // gltf.scene.position.x = 5; // positive X moves the model to the right
-				},
-				// onProgress callback: optional function for showing progress on model load
-				function (xhr) {
-		      // console.log((xhr.loaded / xhr.total * 100) + '% loaded' );
-	      },
-				// onError callback
-				function (error) {
-					console.error(error);
-				}
-			);
+      loadModel();
 
 			document.body.appendChild(ARButton.createButton(renderer));
 
 			window.addEventListener('resize', onWindowResize, false);
 		}
+      
+      // Add a GLTF model to the scene
+      const modelUrl = 'https://github.com/cmhardin-art/cmhardin-art.github.io/raw/main/Robot.glb';
+      
+			loader = new THREE.GLTFLoader();
+      const gltf = await loader.loadAsync(modelUrl);
+      model = gltf.scene;
+      model.position.z = -3; // change the z position a bit
+      addTextureToModel(texture); // add a texture to the model
 
+      // setup the model animation
+      // read more about animation here: 
+      // https://threejs.org/docs/#manual/en/introduction/Animation-system
+      // a mixer object controls the actual playback of the animation
+      mixer = new THREE.AnimationMixer(model);
+
+      // the gltf animations array contains animation clips for the model
+      console.log(gltf.animations);
+
+      gltf.animations.forEach((clip) => {
+        const action = mixer.clipAction(clip);
+        action.play(); // start playing each animation clip
+      });
+
+      scene.add(model);
+    }
+
+    
 		function onWindowResize() {
 			camera.aspect = window.innerWidth / window.innerHeight;
 			camera.updateProjectionMatrix();
@@ -88,12 +90,35 @@
 			renderer.setSize(window.innerWidth, window.innerHeight);
 		}
 
+		// this function is only called one time
 		function animate() {
+			// here we set the render function to be called in a loop
 			renderer.setAnimationLoop(render);
 		}
 
+		// render function called on a loop every time the screen is refreshed
+		// which typically means 60 times a second (60 frames per second)
 		function render() {
+			const delta = clock.getDelta();
+			if (mixer) {
+				// Update the animation mixer on each frame
+				mixer.update(delta);
+			}
+
 			renderer.render(scene, camera);
+		}
+
+		function addTextureToModel(textureToAdd) {
+			model.traverse((child) => {
+				if (child instanceof THREE.Mesh) {
+					child.material.map = textureToAdd;
+
+					// Probably need the lines below if you will change the texture after 
+					// the model has been added to the scene
+					// child.material.needsUpdate = true;
+					// child.material.map.needsUpdate = true;
+				}
+			});
 		}
 
 	</script>
