@@ -1,11 +1,21 @@
-
 <!DOCTYPE html>
-<html><head>
-<meta http-equiv="content-type" content="text/html; charset=UTF-8"><meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<script type="module" src="model-viewer.js"></script>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Hardin SWMF 2022</title>
+        <style>
+            body {
+                overflow: hidden;
+                margin: 0px;
+            }
+        </style>
+    </head>
 
-</head><body style="padding:0px; margin:0px;">
-<model-viewer style="width:100vw; height:100vh;" camera-controls autoplay ar shadow-intensity="1" src="./spacestationalpha3.gltf"></model-viewer>
-
-</body></html>
+    <body id="main">
+        <script type="module" src="bundle.js" style="z-index: -1; position: absolute; top:0px; right:0px; bottom:0px; left:0px;"></script>
+        <div style="z-index: 1; position: absolute; width: 100%; text-align: center; margin-top: 5%;">
+        <button id="playbtn" style="border-radius: 8px; font-size: 32px; border: 2px solid white; background-color: black; color: white; opacity: 0.5;" >Play</button>
+        </div>
+    </body>
+</html>
